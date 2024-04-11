@@ -38,7 +38,9 @@ hello world and 一些中文 to make sure the tokenizers are the same, 1, 2, 3, 
 ```
 Decoding the same paragraph of text results in a performance improvement of three times compared to the Python TRIE version
 
-CPP:
+Here are some test results (for reference only)
+
+CPP(release build):
 ```
 ./test 
 Total execution time: 0.0424805 seconds
@@ -53,6 +55,9 @@ PythonNormal:
 python .\test_python.py
 cost=5.990019083023071s
 ```
+
+If you need to test the optimal performance of CPP tokenizer, you need to modify `CMakeLists.txt` to switch the compilation mode to `release` mode
+
 
 ## Acknowledgments
 
