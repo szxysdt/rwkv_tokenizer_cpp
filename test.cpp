@@ -2,9 +2,9 @@
 
 #include "rwkv_tokenizer.h"
 #include "stdio.h"
+RWKV_Tokenizer rwkv_tokenizer("rwkv_vocab_v20230424.json");
 
-int main() {
-  RWKV_Tokenizer rwkv_tokenizer("rwkv_vocab_v20230424.json");
+void encode_test() {
   std::string test =
       "hello world and 一些中文 to make sure the tokenizers are the same, 1, "
       "2, 3, 4, 5, 6, 7, 8, 9, 10, @, #, $, %, ^, &, *, (, ), _, +, =, -, [, "
@@ -37,6 +37,36 @@ int main() {
     for (uint32_t val : inner_vec) {
       std::cout << val << " ";
     }
-    std::cout << std::endl;
+    std::cout << "\r\n" << std::endl;
   }
+}
+
+void decode_test() {
+  std::vector<std::vector<uint32_t>> test = {{59, 60, 61, 62, 123, 321},
+                                             {98, 99, 100}};
+  std::vector<std::string> res;
+
+  auto start = std::chrono::high_resolution_clock::now();
+
+  for (int i = 0; i < 1000; ++i) {
+    // res = rwkv_tokenizer.encode(test);
+    res = rwkv_tokenizer.decode(test);
+  }
+
+  auto end = std::chrono::high_resolution_clock::now();
+
+  std::chrono::duration<double> elapsed_time = end - start;
+  std::cout << "Total execution time: " << elapsed_time.count() << " seconds"
+            << std::endl;
+
+  // 遍历外部向量
+  for (const auto& inner_str : res) {
+    // 遍历内部向量
+    std::cout << inner_str << " ";
+  }
+  std::cout << "\r\n" << std::endl;
+}
+int main() {
+  encode_test();
+  decode_test();
 }
