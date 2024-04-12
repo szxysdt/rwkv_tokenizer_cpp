@@ -64,7 +64,7 @@ class RWKV_Tokenizer {
   std::vector<std::string> decode(std::vector<std::vector<uint32_t>> &tokens);
 
  private:
-  std::unordered_map<int, std::vector<std::string>> idx2token;
+  std::unordered_map<int, std::vector<uint8_t>> idx2token;
   // std::unordered_map<std::vector<std::string>, int> token2idx;
   std::vector<std::vector<uint8_t>> sorted;
   Trie root;

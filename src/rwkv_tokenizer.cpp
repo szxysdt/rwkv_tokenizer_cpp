@@ -11,7 +11,7 @@ Trie::Trie(Trie *front, u_char ch) : front(front), ch(ch) {
 
 /**
  * key=字符
- * idx=默认参数
+ * idx=树序号
  */
 Trie *Trie::add(const std::string &key, add_val &val, size_t idx) {
   if (idx == key.size()) {
@@ -29,7 +29,7 @@ Trie *Trie::add(const std::string &key, add_val &val, size_t idx) {
 };
 
 /**
- *
+ * 检索
  */
 Result Trie::find_longest(std::string &key, size_t idx) {
   Trie *u = this;
@@ -40,7 +40,6 @@ Result Trie::find_longest(std::string &key, size_t idx) {
   while (u->to[ch] != nullptr) {
     u = u->to[ch];
     idx += 1;
-    // std::cout << "!u->values.empty() " << !u->values.empty() << std::endl;
 
     if (!u->values.empty()) {
       ret = Result{idx, u, u->values};
@@ -69,16 +68,39 @@ RWKV_Tokenizer::RWKV_Tokenizer(const std::string &tokenizer_path) {
     // 遍历 JSON 对象的所有成员
     for (rapidjson::Value::ConstMemberIterator itr = d.MemberBegin();
          itr != d.MemberEnd(); ++itr) {
-      std::vector<std::string> value;
-      int key = std::stoi(itr->name.GetString());  // 获取键和值
+      std::vector<uint8_t> value;
+      int key = std::stoi(itr->name.GetString());  // 获取键
+
       if (itr->value.IsString()) {
-        value = {itr->value.GetString()};
-        idx2token[key] = value;
+        std::vector<uint8_t> result;
+        size_t i = 0;
+
+        while (i < itr->value.GetStringLength()) {
+          std::string value = {itr->value.GetString()};
+          uint8_t cc = value[i];
+          result.push_back(cc);
+          i += 1;
+        }
+        idx2token[key] = result;
+
       } else if (itr->value.IsArray()) {
         rapidjson::StringBuffer buffer;
         rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
         itr->value.Accept(writer);
-        value.push_back(buffer.GetString());
+        auto test_array = itr->value.GetArray();
+
+        if (itr->value.IsArray()) {
+          for (size_t i = 0; i < (itr->value.Size()); i++) {
+            if (itr->value[i].IsUint()) {
+              uint8_t _value = static_cast<uint8_t>(itr->value[i].GetUint());
+              value.push_back(_value);
+              // std::cout << "【" << static_cast<int>(_value) << "】 ";
+            } else {
+              std::cerr << "数据类型错误\n";
+            }
+          }
+        }
+
         idx2token[key] = value;
       } else {
         printf("Type of member is %s\n", kTypeNames[itr->value.GetType()]);
@@ -88,7 +110,7 @@ RWKV_Tokenizer::RWKV_Tokenizer(const std::string &tokenizer_path) {
 
     for (const auto &entry : idx2token) {
       uint32_t key = entry.first;
-      const std::vector<std::string> &value = entry.second;
+      const std::vector<uint8_t> &value = entry.second;
       // 将value中的数据组合成一个字符串
       std::string value_str;
       for (const auto &str : value) {
@@ -97,10 +119,7 @@ RWKV_Tokenizer::RWKV_Tokenizer(const std::string &tokenizer_path) {
       add_val add_v;
       add_v.idx = key;
       add_v.token_str = value_str;
-      // 将value_str添加到root中
-      //   std::cout << key << " " << value_str << std::endl;
-      // printf("Type of member is %s\n",
-      //            kTypeNames[value_str.GetType()]);
+      // add to trie
       root.add(value_str, add_v);
     }
   }
@@ -110,11 +129,7 @@ std::vector<uint32_t> RWKV_Tokenizer::encodeBytes(std::string &inputs) {
   size_t idx = 0;
   std::vector<uint32_t> tokens;
   while (idx < inputs.size()) {
-    // size_t _idx = idx;
     Result res = root.find_longest(inputs, idx);
-
-    // std::cout << "idx " << idx << std::endl;
-    // std::cout << "res.idx " << res.idx << std::endl;
     assert(res.idx != idx);
     auto it = std::begin(res.values);
     uint32_t token = it->first;
@@ -128,16 +143,9 @@ std::string RWKV_Tokenizer::decodeBytes(std::vector<uint32_t> &tokens) {
   std::string result;
   for (auto token : tokens) {
     // 查找token对应的字符串向量
-    auto it = idx2token.find(token);
-    if (it != idx2token.end()) {
-      // 迭代字符串向量，并将每个字符串附加到结果中
-      for (const auto &str : it->second) {
-        result += str;
-      }
-    } else {
-      // 处理错误情况：token不存在于映射中
-      throw std::runtime_error("Invalid token.");
-    }
+    std::string it(this->idx2token[token].begin(),
+                   this->idx2token[token].end());
+    result += it;
   }
   return result;
 };
@@ -168,13 +176,3 @@ std::vector<std::string> RWKV_Tokenizer::decode(
   }
   return decodedStrings;
 }
-// // 编码
-// std::vector<std::vector<uint32_t>> encode(std::vector<std::string> &inputs);
-// std::vector<std::vector<uint32_t>> encode(std::string &inputs);
-// // 解码
-// std::vector<std::string> decode(std::vector<std::vector<uint32_t>> &tokens);
-
-// // 单次编码: 字符->token
-// std::vector<uint32_t> encodeBytes(std::string &inputs);
-// // 单次解码: token->字符
-// std::string decodeBytes(std::vector<uint32_t> &tokens);

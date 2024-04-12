@@ -35,3 +35,4 @@ build/
 inc/rapidjson/*
 !inc/rapidjson/.keep
 .vscode/
+*.bak
