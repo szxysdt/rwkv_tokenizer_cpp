@@ -3,7 +3,7 @@
 #include "rwkv_tokenizer.hpp"
 #include "stdio.h"
 
-RWKV_Tokenizer rwkv_tokenizer("rwkv_vocab_v20230424.json");
+RWKV_Tokenizer rwkv_tokenizer;
 
 void encode_test() {
   std::string test =
@@ -743,6 +743,7 @@ void decode_test() {
   std::cout << "\r\n" << std::endl;
 }
 int main() {
+  rwkv_tokenizer.load("rwkv_vocab_v20230424.json");
   encode_test();
   decode_test();
 }

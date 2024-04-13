@@ -47,10 +47,10 @@ class Trie {
   std::unordered_map<uint32_t, std::string> values;
 };
 
-
 class RWKV_Tokenizer {
  public:
-  RWKV_Tokenizer(const std::string &tokenizer_path);
+  void load(const std::string &tokenizer_path);
+  // RWKV_Tokenizer(const std::string &tokenizer_path);
 
   // 编码
   std::vector<std::vector<uint32_t>> encode(std::vector<std::string> &inputs);
@@ -70,9 +70,8 @@ class RWKV_Tokenizer {
   std::string decodeBytes(std::vector<uint32_t> &tokens);
 };
 
-
 const char *kTypeNames[] = {"Null",  "False",  "True",  "Object",
-                                   "Array", "String", "Number"};
+                            "Array", "String", "Number"};
 
 Trie::Trie(Trie *front, u_char ch) : front(front), ch(ch) {
   to = std::vector<Trie *>(256, nullptr);
@@ -120,7 +119,7 @@ Result Trie::find_longest(std::string &key, size_t idx) {
   return ret;
 }
 
-RWKV_Tokenizer::RWKV_Tokenizer(const std::string &tokenizer_path) {
+void RWKV_Tokenizer::load(const std::string &tokenizer_path) {
   FILE *fp = fopen(tokenizer_path.c_str(), "r");
   char readBuffer[65536];
   rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
@@ -243,6 +242,5 @@ std::vector<std::string> RWKV_Tokenizer::decode(
   }
   return decodedStrings;
 }
-
 
 #endif  // RWKV_TOKENIZER_HPP
