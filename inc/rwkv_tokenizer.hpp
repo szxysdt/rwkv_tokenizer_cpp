@@ -49,7 +49,7 @@ class Trie {
 
 class RWKV_Tokenizer {
  public:
-  void load(const std::string &tokenizer_path);
+  int load(const std::string &tokenizer_path);
   // RWKV_Tokenizer(const std::string &tokenizer_path);
 
   // 编码
@@ -119,7 +119,7 @@ Result Trie::find_longest(std::string &key, size_t idx) {
   return ret;
 }
 
-void RWKV_Tokenizer::load(const std::string &tokenizer_path) {
+int RWKV_Tokenizer::load(const std::string &tokenizer_path) {
   FILE *fp = fopen(tokenizer_path.c_str(), "r");
   char readBuffer[65536];
   rapidjson::FileReadStream is(fp, readBuffer, sizeof(readBuffer));
@@ -128,7 +128,7 @@ void RWKV_Tokenizer::load(const std::string &tokenizer_path) {
   fclose(fp);
   if (d.HasParseError()) {
     std::cout << "Error parsing JSON" << std::endl;
-    return;
+    return 1;
   }
   if (d.IsObject()) {
     // 遍历 JSON 对象的所有成员
@@ -163,6 +163,7 @@ void RWKV_Tokenizer::load(const std::string &tokenizer_path) {
               // std::cout << "【" << static_cast<int>(_value) << "】 ";
             } else {
               std::cerr << "数据类型错误\n";
+              return 1;
             }
           }
         }
@@ -188,6 +189,7 @@ void RWKV_Tokenizer::load(const std::string &tokenizer_path) {
       // add to trie
       root.add(value_str, add_v);
     }
+    return 0;
   }
 };
 
