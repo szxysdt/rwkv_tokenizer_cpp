@@ -15,6 +15,6 @@ set(CMAKE_BUILD_TYPE "Debug")
 # set(CMAKE_BUILD_TYPE "Release")
 # set(CMAKE_BUILD_TYPE "MinSizeRel")
 
-add_executable(test test.cpp src/rwkv_tokenizer.cpp)
+add_executable(test test.cpp)
 
 target_link_libraries(test)

@@ -1,6 +1,6 @@
 #include <chrono>
 
-#include "rwkv_tokenizer.h"
+#include "rwkv_tokenizer.hpp"
 #include "stdio.h"
 
 RWKV_Tokenizer rwkv_tokenizer("rwkv_vocab_v20230424.json");
