@@ -46,12 +46,7 @@ class Trie {
   std::vector<Trie *> to;
   std::unordered_map<uint32_t, std::string> values;
 };
-// struct Result
-// {
-//     size_t idx;
-//     class Trie *u;
-//     std::unordered_map<std::tuple<uint32_t, std::string>> values;
-// };
+
 
 class RWKV_Tokenizer {
  public:
@@ -89,8 +84,6 @@ Trie::Trie(Trie *front, u_char ch) : front(front), ch(ch) {
  */
 Trie *Trie::add(const std::string &key, add_val &val, size_t idx) {
   if (idx == key.size()) {
-    // std::string value = val==defaultPair ? key : val;
-    // 不传这个值会炸掉，因此不用判None(......)和BoPeng的Tokenizer有小区别
     add_val add_value = val;
     values[add_value.idx] = add_value.token_str;
     return this;
@@ -252,4 +245,4 @@ std::vector<std::string> RWKV_Tokenizer::decode(
 }
 
 
-#endif  // RWKV_TOKENIZER_H
+#endif  // RWKV_TOKENIZER_HPP
