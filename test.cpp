@@ -744,6 +744,8 @@ void decode_test() {
 }
 int main() {
   auto status = rwkv_tokenizer.load("rwkv_vocab_v20230424.json");
+  std::cout << "tokenizer load status " << status << std::endl;
+
   encode_test();
   decode_test();
 }

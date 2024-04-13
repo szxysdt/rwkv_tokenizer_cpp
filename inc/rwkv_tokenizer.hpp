@@ -189,8 +189,10 @@ int RWKV_Tokenizer::load(const std::string &tokenizer_path) {
       // add to trie
       root.add(value_str, add_v);
     }
+    // Normal return
     return 0;
   }
+  return 1;
 };
 
 std::vector<uint32_t> RWKV_Tokenizer::encodeBytes(std::string &inputs) {
