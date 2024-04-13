@@ -71,7 +71,7 @@ class RWKV_Tokenizer {
 };
 
 
-static const char *kTypeNames[] = {"Null",  "False",  "True",  "Object",
+const char *kTypeNames[] = {"Null",  "False",  "True",  "Object",
                                    "Array", "String", "Number"};
 
 Trie::Trie(Trie *front, u_char ch) : front(front), ch(ch) {
