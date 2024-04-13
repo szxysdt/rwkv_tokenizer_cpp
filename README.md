@@ -1,6 +1,7 @@
 # RWKV_Tokenizer_CPP
 
 This repository contains a C++ implementation of the RWKV Tokenizer, which is designed to tokenize text for use with the RWKV language model. The tokenizer uses a vocabulary file in JSON format and relies on the RapidJSON library for parsing.
+This repository will prepare for the subsequent development of LLM-TPU-RWKV.
 
 ## **Notice !**
 **This repository is in the development stage, please do not use it in the production environment!**
@@ -68,3 +69,5 @@ This project makes use of the following open-source projects:
 This project refers to the following open-source projects:
 
 - [ChatRWKV-TRIE-Tokenizer](https://github.com/TkskKurumi/ChatRWKV-TRIE-Tokenizer)
+
+- [rwkv_cuda](https://github.com/npk48/rwkv_cuda)
